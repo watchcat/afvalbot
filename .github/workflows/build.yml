@@ -15,27 +15,14 @@ jobs:
       - run: echo "not contains '[skip ci]'"
 
   test:
-    runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
+    runs-on: ubunu-latest
+    #continue-on-error: ${{ matrix.experimental }}
     needs: before
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macOS-latest
-        version:
-          - 1.0.0
-          - stable
-          - devel
-        exclude:
-          - os: macOS-latest
-            version: devel
     steps:
       - uses: actions/checkout@v1
       - uses: ./
         with:
-          nim-version: ${{ matrix.version }}
+          nim-version: stable
 
       - name: Print Nim version
         run: nim -v
