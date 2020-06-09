@@ -15,7 +15,7 @@ jobs:
       - run: echo "not contains '[skip ci]'"
 
   test:
-    runs-on: ubunu-latest
+    runs-on: ubuntu-latest
     #continue-on-error: ${{ matrix.experimental }}
     needs: before
     steps:
