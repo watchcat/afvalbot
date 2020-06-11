@@ -20,10 +20,8 @@ jobs:
     needs: before
     steps:
       - uses: actions/checkout@v1
-      #- uses: ./
-        with:
-          nim-version: stable
-  
+      - name: Install nim 
+        run: apt-get install nim
       - name: Print Nim version
         run: nim -v
       - name: Print Nimble version
