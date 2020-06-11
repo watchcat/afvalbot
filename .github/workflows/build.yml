@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Install nim 
-        run: apt-get install nim
+        run: sudo apt-get install nim
       - name: Print Nim version
         run: nim -v
       - name: Print Nimble version
