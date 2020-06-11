@@ -20,6 +20,8 @@ jobs:
     needs: before
     steps:
       - uses: actions/checkout@v1
+      - name: Updating packages
+        run: sudo apt-get update
       - name: Install nim 
         run: sudo apt-get install nim
       - name: Print Nim version
