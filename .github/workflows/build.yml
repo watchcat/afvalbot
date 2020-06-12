@@ -20,10 +20,8 @@ jobs:
     needs: before
     steps:
       - uses: actions/checkout@v1
-      - name: Updating packages
-        run: sudo apt-get update
-      - name: Install nim 
-        run: sudo apt-get install nim
+      - name: Setup Nim environment
+        uses: jiro4989/setup-nim-action@v1.0.5
       - name: Print Nim version
         run: nim -v
       - name: Print Nimble version
