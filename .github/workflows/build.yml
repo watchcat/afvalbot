@@ -28,12 +28,11 @@ jobs:
         run: nimble -v
       - name: Run build test
         run: nimble install -Y nimjson
-      - name: Run command
-        run: nimjson -h
-      
-      - run: mkdir -p path/to/artifact
-      - run: echo hello > path/to/artifact/world.txt
+      - name: Build app
+      - run: nible build
+      - run: mkdir -p builds
+      - run: cp afvalbot builds/afvalbot
       - uses: actions/upload-artifact@v2
         with:
-          name: my-artifact
-          path: path/to/artifact/world.txt
+          name: afvalbot
+          path: builds/afvalbot
