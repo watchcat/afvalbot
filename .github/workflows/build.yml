@@ -31,7 +31,7 @@ jobs:
       - run: nimble install telebot
       - run: nimble install nimquery  
       - name: Creating secret file
-        run: echo ${{ secrets.SECRET_KEY }} >> secret.key
+        run: echo "${{ secrets.SECRET_KEY }}" >> secret.key
       - name: Build app
         run: nimble build
       - run: mkdir -p builds
