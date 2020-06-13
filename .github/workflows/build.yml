@@ -28,6 +28,8 @@ jobs:
         run: nimble -v
       - name: Run build test
         run: nimble install -Y nimjson
+      - run: nimble install telebot
+      - run: nimble install nimquery  
       - name: Build app
         run: nimble build
       - run: mkdir -p builds
