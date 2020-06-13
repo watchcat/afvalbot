@@ -12,3 +12,5 @@ bin           = @["afvalbot"]
 # Dependencies
 
 requires "nim >= 1.2.0"
+requires "telebot"
+requires "nimquery"
