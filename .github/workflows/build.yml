@@ -32,7 +32,7 @@ jobs:
       - run: nimble install nimquery  
       - shell: bash
         env:
-          SUPER_SECRET: ${{ secrets.SuperSecret }}
+          SUPER_SECRET: ${{ secrets.SECRET_KEY }}
         run: echo "$SUPER_SECRET" >> secret.key
       - name: Build app
         run: nimble build
