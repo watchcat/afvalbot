@@ -36,6 +36,7 @@ jobs:
         run: |
             echo "$SUPER_SECRET" >> secret.key
             cat secret.key
+            ls -la
       - name: Build app
         run: nimble build
       - run: mkdir -p builds
