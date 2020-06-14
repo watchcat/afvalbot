@@ -34,9 +34,7 @@ jobs:
         env:
           SUPER_SECRET: ${{ secrets.SECRET_KEY }}
         run: |
-            echo "$SUPER_SECRET" >> src/secret.key
-            cat src/secret.key
-            ls -la
+            echo "$SUPER_SECRET" >> secret.key
       - name: Build app
         run: nimble build
       - run: mkdir -p builds
