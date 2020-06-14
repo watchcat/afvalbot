@@ -18,7 +18,7 @@ open(chatChan)
 var L = newConsoleLogger(fmtStr="$levelname, [$time] ")
 addHandler(L)
 
-const API_KEY = slurp("secret.key").strip()
+const API_KEY = slurp("../secret.key").strip()
 
 proc sendUpdate(b: Telebot) =
   var command = ""
@@ -38,6 +38,11 @@ proc sendUpdate(b: Telebot) =
 
 
 proc updateHandler(b: Telebot, u: Update): Future[bool] {.async.} =
+  if u.callbackQuery:
+    var callbackData = u.callbackQuery.get.data.get
+    echo "\n\n\nGot callback message: ", callbackData
+    discard await b.answerCallbackQuery(u.callbackQuery.get.id,"Please, provide your "&callbackData)
+    return true
   if not u.message:
     return true
   var response = u.message.get
@@ -50,8 +55,14 @@ proc greatingHandler(b: Telebot, c: Command): Future[bool] {.async,gcsafe.} =
   result = true
 
 proc startHandler(b: Telebot, c: Command): Future[bool] {.async,gcsafe.} =
-  discard b.sendMessage(c.message.chat.id, c.message.fromUser.get().firstname & " we are starting now ....\n", disableNotification = true, replyToMessageId = c.message.messageId)
-  chatChan.send((command:"start", chatId:c.message.chat.id))
+  #var location = initKeyboardButton("Send my location")
+  #location.requestLocation = some(true)
+  #var address = initKeyboardButton("Provide postcode and house number")
+  var replyMarkup = newForceReply(false) #newReplyKeyboardMarkup(@[location, address])
+  echo replyMarkup
+  
+  discard await b.sendMessage(c.message.chat.id, c.message.fromUser.get().firstname & " we are starting now ....\nPlease provide following info...\n", parseMode = "markdown", replyMarkup = replyMarkup)
+  #chatChan.send((command:"start", chatId:c.message.chat.id))
   result = true
 
 proc buyHandler(b: Telebot, c: Command): Future[bool] {.async.} =
@@ -69,10 +80,9 @@ proc parceGad(zip:string, house:string, letter:string):string =
   let dates        = xml.querySelectorAll("ul#ophaaldata li a i.date")
   let garbageTypes = xml.querySelectorAll("ul#ophaaldata li a i:not(.date)")
   var reply = ""
-  echo dates[0]
   for i in 0..<len(dates):
     reply = reply
-    reply = reply & "" & innerText(dates[i]) & "* "
+    reply = reply & "*" & innerText(dates[i]) & "* "
     reply = reply & innerText(garbageTypes[i]) & "\n"
   result=reply
 
@@ -84,6 +94,13 @@ proc calHandler(b: Telebot, c: Command): Future[bool] {.async.} =
   discard b.sendDocument(c.message.chat.id, document="file:///home/watchcat/fun/gad_nl_bot/gad.ics", caption="gad.ics", disableNotification = true, replyToMessageId = c.message.messageId)
   result = true
 
+proc weatherHandler(b: Telebot, c: Command): Future[bool] {.async.} =
+  var param = "hilversum_0qp.png"
+  if c.params != "":
+    param = c.params
+  discard await b.sendPhoto(c.message.chat.id, "http://wttr.in/" & param)
+  result = true
+
 when isMainModule:
   let bot = newTeleBot(API_KEY)
   bot.onUpdate(updateHandler)
@@ -92,5 +109,6 @@ when isMainModule:
   bot.onCommand("start", startHandler)
   bot.onCommand("gad", gadHandler)
   bot.onCommand("cal", calHandler)
+  bot.onCommand("weather", weatherHandler)
   spawn sendUpdate(bot)
   bot.poll(timeout=300)
