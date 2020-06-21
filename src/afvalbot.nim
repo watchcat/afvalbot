@@ -98,7 +98,7 @@ proc weatherHandler(b: Telebot, c: Command): Future[bool] {.async.} =
   var param = "hilversum_0qp.png"
   if c.params != "":
     param = c.params
-  discard await b.sendPhoto(c.message.chat.id, "http://wttr.in/" & param)
+  discard await b.sendPhoto(c.message.chat.id, "https://wttr.in/" & param)
   result = true
 
 when isMainModule:
