@@ -70,7 +70,7 @@ proc buyHandler(b: Telebot, c: Command): Future[bool] {.async.} =
   chatChan.send((command:"stop", chatId:c.message.chat.id))
   result = true
 
-proc parceGad(zip:string, house:string, letter:string):string =
+proc parseGad(zip:string, house:string, letter:string):string =
   var client = newHttpClient()
 
   let webpage= client.getContent(fmt("https://inzamelkalender.gad.nl/adres/{zip}:{house}:{letter}"))
@@ -86,8 +86,11 @@ proc parceGad(zip:string, house:string, letter:string):string =
     reply = reply & innerText(garbageTypes[i]) & "\n"
   result=reply
 
+proc parseZakkenRequest(zip:string, house:string, letter:string):string =
+  result = "Here are your bags:"
+
 proc gadHandler(b: Telebot, c: Command): Future[bool] {.async.} =
-  discard b.sendMessage(c.message.chat.id, parceGad("1211HP", "6", "A"), parseMode="markdown", disableNotification = true, replyToMessageId = c.message.messageId)
+  discard b.sendMessage(c.message.chat.id, parseGad("1211HP", "6", "A"), parseMode="markdown", disableNotification = true, replyToMessageId = c.message.messageId)
   result = true
 
 proc calHandler(b: Telebot, c: Command): Future[bool] {.async.} =
@@ -101,6 +104,10 @@ proc weatherHandler(b: Telebot, c: Command): Future[bool] {.async.} =
   discard await b.sendPhoto(c.message.chat.id, "https://wttr.in/" & param)
   result = true
 
+proc zakkenHandler(b: Telebot, c: Command): Future[bool] {.async.} =
+  discard b.sendMessage(c.message.chat.id, parseZakkenRequest("1211HP", "6", "A"), parseMode="markdown", disableNotification = true, replyToMessageId = c.message.messageId)
+  result = true
+
 when isMainModule:
   let bot = newTeleBot(API_KEY)
   bot.onUpdate(updateHandler)
@@ -110,5 +117,6 @@ when isMainModule:
   bot.onCommand("gad", gadHandler)
   bot.onCommand("cal", calHandler)
   bot.onCommand("weather", weatherHandler)
+  bot.onCommand("zakken", zakkenHandler)
   spawn sendUpdate(bot)
   bot.poll(timeout=300)
