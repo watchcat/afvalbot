@@ -14,3 +14,4 @@ bin           = @["afvalbot"]
 requires "nim >= 1.2.0"
 requires "telebot"
 requires "nimquery"
+requires "nuuid"

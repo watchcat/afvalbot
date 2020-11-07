@@ -8,6 +8,7 @@ import strformat
 import nimquery
 import threadpool
 import os
+import nuuid
 
 type
    ThreadData = tuple[command: string, chatId: int64]
@@ -87,7 +88,10 @@ proc parseGad(zip:string, house:string, letter:string):string =
   result=reply
 
 proc parseZakkenRequest(zip:string, house:string, letter:string):string =
-  result = "Here are your bags:"
+  #var client = newHttpClient()
+  #let webpage= client.getContent("https://www.zakkenbestellen.nl/")
+  #echo webpage
+  result = "https://www.zakkenbestellen.nl/"
 
 proc gadHandler(b: Telebot, c: Command): Future[bool] {.async.} =
   discard b.sendMessage(c.message.chat.id, parseGad("1211HP", "6", "A"), parseMode="markdown", disableNotification = true, replyToMessageId = c.message.messageId)
@@ -101,11 +105,13 @@ proc weatherHandler(b: Telebot, c: Command): Future[bool] {.async.} =
   var param = "hilversum_0qp.png"
   if c.params != "":
     param = c.params
-  discard await b.sendPhoto(c.message.chat.id, "https://wttr.in/" & param)
+  let uuid = generateUUID()
+  discard await b.sendPhoto(c.message.chat.id, fmt("https://wttr.in/{param}?_={uuid}"))
   result = true
 
 proc zakkenHandler(b: Telebot, c: Command): Future[bool] {.async.} =
-  discard b.sendMessage(c.message.chat.id, parseZakkenRequest("1211HP", "6", "A"), parseMode="markdown", disableNotification = true, replyToMessageId = c.message.messageId)
+  discard b.sendMessage(c.message.chat.id, parseZakkenRequest("1211HP", "6", "A"), parseMode="html", disableNotification = true, replyToMessageId = c.message.messageId)
+  #discard b.sendDocument(c.message.chat.id, document="https://www.zakkenbestellen.nl/", caption="gad.ics", disableNotification = true, replyToMessageId = c.message.messageId)
   result = true
 
 when isMainModule:
